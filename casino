@@ -1,0 +1,84 @@
+SERVER_SEND_FREQ = 91
+SERVER_RECV_FREQ = 90
+
+--WIP slot machine program
+
+function broadcast(message)
+	modem.transmit(SERVER_SEND_FREQ, SERVER_RECV_FREQ, message)
+end
+
+function waitForMessage()
+	local event, modemSide, senderChannel, receiverChannel, message, distance = os.pullEvent("modem_message")
+	return message;
+end
+
+function getPlayerInfo(playerName)
+	broadcast("getPlayerInfo:"..playerName)
+
+	local response = waitForMessage()
+	if response == "NOT_FOUND" then
+		return nil
+	else
+		return textutils.unserialize(response)
+	end
+end
+
+
+function setPlayerInfo(playerInfo)
+	broadcast("setPlayerInfo:"..playerInfo.playerName.."-"..texutitls.serialize(playerInfo))
+
+	local response = waitForMessage()
+	if response == "OK" then
+		return true
+	else
+		return false
+	end
+end
+
+function drawSlot(x, y, rollTimes, maxNumber)
+		green = true
+	for j = 1, rollTimes do
+		sleep(math.sqrt(j)-1)
+		numbers = {math.random(maxNumber), math.random(maxNumber), math.random(maxNumber)}
+		note.playNote(2, 4)
+		for i = 1, #numbers do
+			--Draw the main number
+			
+			if green then
+
+				term.setBackgroundColor(colors.lime)
+				term.setCursorPos(1,1)
+				print("Green")
+				green = false
+			else
+				term.setBackgroundColor(colors.grey)
+				term.setCursorPos(20,1)
+				print("Grey")
+				green = true
+			end
+			term.setCursorPos(x+i,y)
+			print(numbers[i])
+
+			--Draw number -/+1
+			if green then
+				term.setBackgroundColor(colors.green)
+				green = false
+			else
+			--	term.setBackgroundColor(colors.grey)
+				green = true
+			end
+			term.setCursorPos(x+i,y-1)
+			print(numbers[i]-1)
+			term.setCursorPos(x+i,y+1)
+			print(numbers[i]+1)
+
+		end
+	end
+end
+
+function testRand(x, y, rollTimes, maxNumber)
+	numbers = {math.random(maxNumber), math.random(maxNumber), math.random(maxNumber), math.random(maxNumber)}
+end
+
+note = peripheral.wrap("right")
+drawSlot(2,3,10,8)

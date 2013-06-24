@@ -1,0 +1,154 @@
+tArgs = { ... }
+dataBase = { ... }
+SERVER_SEND_FREQ = 91
+SERVER_RECV_FREQ = 90
+
+--Registration server for a project I was working on
+
+--os.loadAPI("uutils")
+
+
+modem = peripheral.wrap("left")
+modem.open(SERVER_RECV_FREQ)
+
+function dPrint(text)
+	if tArgs[1] == "debugmode" then
+		print(text)
+	end
+end
+
+function drawLogo()
+	local img = paintutils.loadImage(".logo")
+	term.setBackgroundColor(colors.white)
+	term.clear()
+	term.setTextColor(colors.black)
+	paintutils.drawImage(img, 0,1)
+	term.setBackgroundColor(colors.white)
+	term.setCursorPos(15, 11)
+	print("U N A C C E P T A B L E")
+	term.setCursorPos(15, 12)
+	write("T E C H N O L O G I E S           ")
+end
+function save(table, name)
+	dPrint("Saving file "..name)
+	local file = fs.open(name,"w")
+	file.write(textutils.serialize(table))
+	file.close()
+end
+function load(name)
+	dPrint("Loading file "..name)
+	local file = fs.open(name,"r")
+	local data = file.readAll()
+	file.close()
+	return textutils.unserialize(data)
+end
+function split(pString, pPattern)
+	local Table = {}
+	local fpat = "(.-)"..pPattern
+	local last_end = 1
+	local s, e, cap = pString:find(fpat, 1)
+	while s do
+		if s ~= 1 or cap ~= "" then
+			table.insert(Table, cap)
+		end
+		last_end = e+1
+		s, e, cap = pString:find(fpat, last_end)
+	end
+		if last_end <= #pString then
+			cap = pString:sub(last_end)
+			table.insert(Table, cap)
+		end
+	return Table
+end
+function contains(str, text)
+	if str:find(text) == nil then
+		return false
+	else
+		return true
+	end
+end
+function broadcast(message)
+	--uutils.regBroadcast(message)
+	modem.transmit(SERVER_SEND_FREQ,SERVER_RECV_FREQ, message)
+end
+function waitForMessage()
+	local event, modemSide, senderChannel, receiverChannel, message, distance = os.pullEvent("modem_message")
+	return message
+	-- dPrint("Waiting...")
+	-- return uutils.waitForMessage()
+end
+function handlePing()
+	dPrint("Handling as a ping.")
+	broadcast("ping")
+end
+function handleGetPlayerInfo(query)
+	dPrint("Handling as a player info request.")
+	player = query:gsub("getPlayerInfo:","")
+	dPrint("Removed getPlayerInfo: Left with "..player)
+	if dataBase[player] == nil then
+		dPrint("Player not found!")
+		broadcast("NOT_FOUND")
+	else
+	broadcast(textutils.serialize(dataBase[player]))
+		dPrint("Another successful mission boss!")
+		
+	end
+end
+function handleSetPlayerInfo(query)
+	dPrint("Handling as a player info set request.")
+	msg = query:gsub("setPlayerInfo:","")
+	dPrint("Removed setPlayerInfo: Left with "..msg)
+	args = split(msg, "-")
+	dPrint("Parsed message as "..args[1]..", "..args[2])
+	player = args[1]
+	newPlayerInfo = textutils.unserialize(args[2])
+	if dataBase[player] == nil then
+		dPrint("Player not found!")
+		broadcast("NOT_FOUND")
+	else
+		dataBase[player] = newPlayerInfo
+		save(dataBase, "database")
+		dPrint("Another successful mission boss!")
+	end
+end
+function handlePlayerRegistration(query)
+	dPrint("Handling as a player registration.")
+
+
+	newPlayerInfo = textutils.unserialize(query)
+	if dataBase[player] == nil then
+		dataBase[player] = newPlayerInfo
+		save(dataBase, "database")
+		dPrint("Another successful mission boss!")
+	else
+		dPrint("Player already registered!")
+		broadcast("ALREADY_REGISTERED")
+	end
+end
+
+
+
+drawLogo() -- Draw the logo before starting the server
+-- uutils.init("left", true)
+
+if fs.exists(".database") then
+dataBase = load(".database")
+else
+save(dataBase, ".database")
+end
+
+while true do
+	query = waitForMessage()
+	dPrint("Received query: "..query)
+	if query == "ping" then
+	handlePing()
+	elseif 
+	contains(query, "getPlayerInfo:") then
+	handleGetPlayerInfo(query)
+	elseif
+	contains(query, "setPlayerInfo:") then
+	handleSetPlayerInfo(query)
+	else
+	handlePlayerRegistration(query)
+	end
+end

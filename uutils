@@ -1,0 +1,61 @@
+REG_SEND_FREQ = 90
+REG_RECV_FREQ = 91
+
+--WIP utility API
+
+function init(side, server)
+	print("UnacceptableUtils v1.0 Inititalized.")
+	modem = peripheral.wrap(side)
+	print(server)
+	if server then
+	print("Opening port "..REG_SEND_FREQ)
+		modem.open(REG_SEND_FREQ)
+	else
+	print("Opening port "..REG_RECV_FREQ)
+		modem.open(REG_RECV_FREQ)
+	end
+end
+
+function reset()
+	modem.close(REG_RECV_FREQ)
+	modem = nil
+	message = nil
+	response = nil
+end
+
+
+function regBroadcast(message)
+	if server then
+		modem.transmit(REG_RECV_FREQ, REG_SEND_FREQ, message)
+	else
+		modem.transmit(REG_SEND_FREQ, REG_RECV_FREQ, message)
+	end
+end
+
+function waitForMessage()
+	print("[UUTILS] Waiting...")
+	local event, modemSide, senderChannel, receiverChannel, message, distance = os.pullEvent("modem_message")
+	return message;
+end
+
+function getPlayerInfo(playerName)
+	regBroadcast("getPlayerInfo:"..playerName)
+	
+	local response = waitForMessage()
+	if response == "NOT_FOUND" then
+		return nil
+	else
+		return textutils.unserialize(response)
+	end
+end
+
+function setPlayerInfo(playerInfo)
+	regBroadcast("setPlayerInfo:"..playerInfo.playerName.."-"..texutitls.serialize(playerInfo))
+	
+	local response = waitForMessage()
+	if response == "OK" then
+		return true
+	else
+		return false
+	end
+end
