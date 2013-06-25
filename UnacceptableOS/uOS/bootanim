@@ -1,0 +1,31 @@
+--UnacceptableOS bootup
+
+
+term.clear()
+term.setCursorPos(1,1)
+
+function apiLoad(api)
+	cx, cy = term.getCursorPos()
+	print(api.."is missing.")
+	os.loadAPI(api)
+	term.clear()
+	term.setCursorPos(cx, cy)
+end
+apiLoad("ukern")
+
+vlog("Loaded kernal...")
+vlog("Trying to load config file...")
+config = ukern.load("cfg")
+vlog("Loaded config successfully!")
+
+if config.isFirstTimeLoad then
+	vlog("First time boot, launching first time init script.")
+	shell.run('ufti')
+end
+
+
+logo = paintutils.loadImage("logo")
+paintutils.drawImage(1,1,logo)
+
+
+

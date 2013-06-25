@@ -1,0 +1,20 @@
+--OS Root functions
+
+function save(table,name)
+local file = fs.open(name,"w")
+file.write(textutils.serialize(table))
+file.close()
+end
+
+function load(name)
+local file = fs.open(name,"r")
+local data = file.readAll()
+file.close()
+return textutils.unserialize(data)
+end
+
+function vlog(text, config)
+	if config.verboseBoot then
+		print(text)
+	end
+end

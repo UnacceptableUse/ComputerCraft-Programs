@@ -1,0 +1,77 @@
+tArgs = {...}
+
+width = 0
+height = 0
+length = 0
+blocksMined = 0
+fuelNeeded = 0
+newFuelNeeded = 0
+
+isEvenTurn = false
+
+
+function mineUp()
+	for h = 1, height do
+		if turtle.digUp() then
+			blocksMined = blocksMined+1
+		end
+		turtle.up()
+	end
+	for h = 1, height do
+		while turtle.down() = false do
+			turtle.down()
+		end
+	end
+end
+function turn()
+	if evenTurn then
+		turtle.turnLeft()
+		if turtle.dig() then
+			blocksMined = blocksMined+1
+		end
+		turtle.forward()
+		turtle.turnLeft()
+		evenTurn = false
+	else
+		turtle.turnRight()
+		if turtle.dig() then
+			blocksMined = blocksMined+1
+		end
+		turtle.forward()
+		turtle.turnRight()
+		evenTurn = true
+	end
+end
+
+if #tArgs < 3 then
+	print("Usage: landscape width length height")
+else
+	width = tArgs[1]
+	length = tArgs[2]
+	height = tArgs[3]
+	fuelNeeded = width*length*height
+	print("Mining "..width.."x"..length.."x"..height.." area.")
+	print("An estimated "..fuelNeeded.." units of fuel will be needed to complete!")
+	if turtle.getFuelLevel() < fuelNeeded then
+		print("Turtle does not have enough fuel to complete!")
+	else
+		print("Turtle has enough fuel to complete!")
+	end
+	for w = 1, width do
+		for l = 1, length do
+			mineUp()
+			if turtle.dig() = false then
+			turtle.attack()
+			end
+			turtle.forward()
+		end
+		newFuelNeeded = fuelNeeded-minedBlocks
+		print("Mined "..minedBlocks.."blocks")
+		print("Estimated "..newFuelNeeded.." blocks to go!")
+		turn()
+	end
+	print("Done!")
+	print(minedBlocks.." were mined, estimated "..fuelNeeded.." blocks".)
+	print((minedBlocks/fuelNeeded)*100.."% of the area was solid blocks.")
+	
+end -- End of program
