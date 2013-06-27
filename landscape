@@ -18,7 +18,7 @@ function mineUp()
 		turtle.up()
 	end
 	for h = 1, height do
-		while turtle.down() = false do
+		while turtle.down() == false do
 			turtle.down()
 		end
 	end
@@ -44,7 +44,7 @@ function turn()
 end
 
 if #tArgs < 3 then
-	print("Usage: landscape width length height")
+	print("Usage: landscape <width> <length> <height>")
 else
 	width = tArgs[1]
 	length = tArgs[2]
@@ -60,7 +60,7 @@ else
 	for w = 1, width do
 		for l = 1, length do
 			mineUp()
-			if turtle.dig() = false then
+			if turtle.dig() == false then
 			turtle.attack()
 			end
 			turtle.forward()
@@ -71,7 +71,7 @@ else
 		turn()
 	end
 	print("Done!")
-	print(minedBlocks.." were mined, estimated "..fuelNeeded.." blocks".)
+	print(minedBlocks.." were mined, estimated "..fuelNeeded.." blocks")
 	print((minedBlocks/fuelNeeded)*100.."% of the area was solid blocks.")
 	
 end -- End of program
