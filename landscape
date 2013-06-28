@@ -72,6 +72,6 @@ else
 	end
 	print("Done!")
 	print(blocksMined.." were mined, estimated "..fuelNeeded.." blocks")
-	print(((blocksMinmed/fuelNeeded)*100).."% of the area was solid blocks.")
+	print(((blocksMined/fuelNeeded)*100).."% of the area was solid blocks.")
 	
 end -- End of program
