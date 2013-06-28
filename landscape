@@ -65,7 +65,7 @@ else
 			end
 			turtle.forward()
 		end
-		newFuelNeeded = fuelNeeded-minedBlocks
+		newFuelNeeded = fuelNeeded-blocksMined
 		print("Mined "..minedBlocks.."blocks")
 		print("Estimated "..newFuelNeeded.." blocks to go!")
 		turn()
