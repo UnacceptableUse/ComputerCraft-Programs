@@ -66,12 +66,12 @@ else
 			turtle.forward()
 		end
 		newFuelNeeded = fuelNeeded-blocksMined
-		print("Mined "..minedBlocks.."blocks")
+		print("Mined "..blocksMined.."blocks")
 		print("Estimated "..newFuelNeeded.." blocks to go!")
 		turn()
 	end
 	print("Done!")
-	print(minedBlocks.." were mined, estimated "..fuelNeeded.." blocks")
-	print(((minedBlocks/fuelNeeded)*100).."% of the area was solid blocks.")
+	print(blocksMined.." were mined, estimated "..fuelNeeded.." blocks")
+	print(((blocksMinmed/fuelNeeded)*100).."% of the area was solid blocks.")
 	
 end -- End of program
