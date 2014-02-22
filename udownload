@@ -1,0 +1,11 @@
+site = "http://fightthetoast.co.uk/uunet/download/"
+function save(content, path)
+local files = file.open(path, "w")
+files.write(content)
+files.close()
+end
+ 
+function downloadAPI(api)
+file = http.get(site..api)
+save(file.readAll(), api)
+end
