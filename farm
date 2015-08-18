@@ -1,0 +1,156 @@
+width = 9
+length = 12
+seedSlot = 1
+chestType = "minecraft:chest"
+seedType = "Natura:barley.seed"
+wheatType = "Natura:barleyFood"
+wheatMeta = 1
+refuelTimes = 4
+direction = true
+
+function checkBlock()
+  isPresent, data = turtle.inspectDown()
+  if isPresent == false then
+    turtle.select(seedSlot)
+    turtle.placeDown()
+  else
+    if data.metadata == 3 then
+     turtle.digDown()
+      turtle.select(seedSlot)
+      turtle.placeDown()     
+    end
+  end
+end
+
+function refuel()
+	print("Just going to get rid of any crap I have left")
+	homeDuties();
+	turtle.select(seedSlot)
+	turtle.dropUp()
+	print("Refuelling...")
+	turtle.turnLeft()
+	turtle.turnLeft()
+	turtle.forward()
+	--tank = peripheral.wrap("front")
+	for i=0,refuelTimes do
+		--tankInfo = tank.getTankInfo()
+		--if tankInfo[1].contents.name == "lava" then
+			print("Found a tank with lava in")
+			turtle.suckUp(16)
+			for b=0,turtle.getItemCount(turtle.getSelectedSlot()) do
+				turtle.place()
+			--end
+			for s=1,16 do
+    turtle.select(s)
+				turtle.refuel()
+    turtle.dropUp()
+			end
+   print("Fuel level is now "..turtle.getFuelLevel())
+		end
+	end
+	print("Done refuelling")
+	turtle.turnRight()
+	turtle.turnRight()
+	turtle.forward()
+end
+
+function checkSanity()
+  print("Waiting for seeds...")
+  turtle.suckUp(16)
+  while turtle.getItemCount(seedSlot) == 0 do
+    sleep(1)
+    --Nothing?
+  end
+  turtle.turnRight()
+  isPresent, data = turtle.inspect()
+  turtle.turnLeft()
+  if isPresent == false then
+    error("Turtle is not in starting position")
+  elseif data.name ~= chestType then
+    error("Turtle is not next to a chest") 
+  end
+
+  if turtle.getFuelLevel() == 0 then 
+  	error("No fuel left. How could this happen!?")
+  elseif turtle.getFuelLevel() < width*length then
+  	print("Not enough fuel to continue, going to refuel station...")
+  	refuel()
+  end
+end
+
+function run()
+  checkSanity()
+  for x=0,width do
+    for y=0,length do
+      checkBlock()
+      turtle.forward()
+    end
+    checkBlock()
+    if direction == true then
+      turtle.turnLeft()
+      while turtle.forward() == false do
+        turtle.attack()
+      end
+      turtle.turnLeft()
+      direction = false
+    else
+      turtle.turnRight()
+      while turtle.forward() == false do
+        turtle.attack()
+      end
+      turtle.turnRight()
+      direction = true
+    end   
+    checkBlock()
+  end
+end
+
+function goHome()
+  print("Going home")
+  turtle.turnRight()
+  for i=0,width do
+    turtle.forward()
+  end
+  turtle.turnLeft()
+end
+
+function homeDuties()
+  print("Dropping off seeds")
+  turtle.select(seedSlot)
+  turtle.dropUp()
+  turtle.turnRight()
+  for s=1,16 do
+    if turtle.getItemCount(s) > 0 then
+      item = turtle.getItemDetail(s)      
+      print("Found item "..item.name)
+      if item.name == seedType then
+        print("Putting it in the seed chest")
+        turtle.select(s)
+        turtle.dropUp()
+      end
+    end
+  end
+  turtle.craft()
+  for s=1,16 do
+    if turtle.getItemCount(s) > 0 then
+      item = turtle.getItemDetail(s)
+      print("Found item "..item.name.." looking for "..wheatType)
+      if item.name == wheatType then
+        print("Putting it in the flour chest")
+        turtle.select(s)
+        turtle.drop()
+      end
+    end
+  end
+  turtle.select(seedSlot)
+  turtle.suckUp()
+  turtle.turnLeft()
+end
+
+--refuel()
+ while true do
+   run()
+   goHome()
+   homeDuties()
+   sleep(240)
+ end
