@@ -1,0 +1,39 @@
+stations = {Alex={3,5}, NeilPeter={40,10}, Jake={63,7}}
+
+function listen()
+	rednet.open("top")
+--	rednet.host("railtracker", "RT_PeterNeil")
+-- s,e,x,y = os.pullEvent("monitor_touch")
+-- term.setCursorPos(1,1)
+-- term.write(x.." "..y)
+ sender, message, proto = rednet.receive("railnet", 2)
+ draw()
+ if message ~= nil then
+   data = textutils.unserialise(message)
+   term.setCursorPos(data.x-string.len(data.user), data.y)
+   term.write("("..data.user..")")
+ end
+end
+
+
+function draw()
+ term.setBackgroundColor(colors.black)
+ term.clear()
+ term.setCursorPos(1,1)
+	map = paintutils.loadImage("rail")
+	paintutils.drawImage(map, 0, 0)
+	for name, coords in pairs(stations) do
+		term.setBackgroundColor(colors.black)
+		term.setTextColor(colors.white)
+		term.setCursorPos(coords[1], coords[2])
+		term.write(name)
+	end
+
+	
+
+end
+
+draw()
+while true do
+listen()
+end
