@@ -1,0 +1,36 @@
+aa = peripheral.wrap("left")
+solar = peripheral.wrap("back")
+tank = peripheral.wrap("rcirontankvalvetile_1")
+sludge = peripheral.wrap("harvester_0")
+rednet.open("right")
+
+function sendToGlasses(name, value, colour)
+  payload = {name=name, data=value, colour=colour}
+  rednet.broadcast(textutils.serialise(payload), "glasses")
+end
+
+while true do
+  if aa.getStackInSlot(1) ~= nil then
+     --sendToGlasses("XP Tank", tank.getTankInfo()[1].contents.amount.."/"..tank.getTankInfo()[1].capacity, 0x66FF33)
+     --if sludge.getTankInfo()[1].contents ~= nil then
+       --if sludge.getTankInfo()[1].contents.amount > 1000 then
+         --sendToGlasses("Sludge warning", sludge.getTankInfo()[1].contents.amount.."/"..sludge.getTankInfo()[1].capacity, 0xFF0000)
+         --else
+         --sendToGlasses("Sludge warning", nil, 0)
+       --end
+     --end
+     
+     redstone.setOutput("left", true)
+  else
+    redstone.setOutput("left", false)
+  end
+  
+  if solar.getEnergyStored() == 100000 then
+    sendToGlasses("Solar", "Discharging", 0x00FF00)
+    redstone.setOutput("back", true)
+  elseif solar.getEnergyStored() == 0 then
+    sendToGlasses("Solar", "Charging", 0xFF0000)
+    redstone.setOutput("back", false)
+  end
+  sleep(1)
+end
