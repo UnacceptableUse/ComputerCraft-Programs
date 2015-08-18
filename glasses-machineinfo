@@ -1,0 +1,59 @@
+--Do not even attempt to edit this in the CC editor. Holy fuck you're in for a bad time
+cell = peripheral.wrap("tile_thermalexpansion_cell_hardened_name_1")
+furnace = peripheral.wrap("tile_thermalexpansion_machine_furnace_name_0")
+pulverizer = peripheral.wrap("tile_thermalexpansion_machine_pulverizer_name_1")
+transposer = peripheral.wrap("tile_thermalexpansion_machine_transposer_name_0")
+crucible = peripheral.wrap("tile_thermalexpansion_machine_crucible_name_0")
+charger = peripheral.wrap("tile_thermalexpansion_machine_charger_name_0")
+rednet.open("front")
+function sendToGlasses(name, value, colour)
+--  print(name)
+  payload = {name=name, data=value, colour=colour}
+  rednet.broadcast(textutils.serialise(payload), "glasses")
+  sleep(0.2)
+end
+
+function chargerInfo()
+	chargingInfo = charger.getStackInSlot(2)
+	if chargingInfo == nil then
+		chargedInfo = charger.getStackInSlot(3)	
+		if chargedInfo == nil then
+			sendToGlasses("Charger", nil, 0xFFFFFF)
+		else
+			sendToGlasses("Charger", chargedInfo.display_name..": Charged", 0x69FF69)
+		end
+	else
+		sendToGlasses("Charger", chargingInfo.display_name..": "..chargingInfo.energy_te.energyStored.."/"..chargingInfo.energy_te.maxEnergyStored, 0xFF9900)
+	end
+end
+
+function cellInfo()
+	sendToGlasses("Power", cell.getEnergyStored().."/"..cell.getMaxEnergyStored(), 0xFFFFFF)
+end
+
+function furnaceInfo()
+	furn = furnace.getStackInSlot(1)
+	if furn ~= nil then
+		sendToGlasses("Furnace", furn.display_name.." x"..furn.qty, 0xFF9900)
+	else
+		sendToGlasses("Furnace", nil, 0xFFFFFF)
+	end
+end
+
+function pulverizerInfo()
+	pulv = pulverizer.getStackInSlot(1)
+	if pulv ~= nil then
+		sendToGlasses("Pulverizer", pulv.display_name.."x"..pulv.qty, 0xFF9900)
+	else
+		sendToGlasses("Pulverizer", nil, 0xFFFFFF)
+	end
+end
+
+
+
+while true do
+	cellInfo()
+	chargerInfo()
+	furnaceInfo()
+	pulverizerInfo()
+end
