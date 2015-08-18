@@ -1,0 +1,16 @@
+tArgs = {...}
+if #tArgs < 2 then
+print("Usage:")
+print("wget <url> <filename>")
+else
+print("Downloading...")
+if(string.match(tArgs[1],"http://")) then
+else
+tArgs[1] = "http://"..tArgs[1]
+end
+file = http.get(tArgs[1])
+print("Done!")
+save = fs.open(tArgs[2], "w")
+save.write(file.readAll())
+save.close()
+end
