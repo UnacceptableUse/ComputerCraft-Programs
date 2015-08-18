@@ -1,0 +1,13 @@
+mon = peripheral.wrap("left")
+x, y= mon.getSize()
+variations = {"WE ONLY FINGER THE SKANKIEST OF SKANKS... LIKE GEORGIA!", "NOW YOU DONT HAVE TO CHANGE THE SIGN, IT DOES IT ITSSELF!", "LIKE ALEX'S TOWER, BUT WITH 1000% MORE SIGN", "FOR RECTAL USE ONLY", "ANTI-MASTURBATION SINCE 1969", "BOOTYFACE", "AS SEEN ON TV", "NSFW", "COMING SOON, INSIDE YOUR MUM", "YA'LL ARE SERIOUSLY STILL PLAYING MINECRAFT?", "I DONT KNOW WHERE YOUR DIAMONDS WENT", "NO I DONT HAVE ANY GOLD", "YUMMY DICK"}
+message = "UNACCETPABLE CORPORATION - "..variations[math.random(1,#variations)]
+while true do
+for i=-x,string.len(message) do
+mon.clear() 
+mon.setCursorPos(-i,1)
+mon.setTextScale(2)
+mon.write(message)
+sleep(0.3)
+end
+end
