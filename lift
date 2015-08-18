@@ -1,0 +1,82 @@
+cart = peripheral.wrap("right")
+currentFloor = 0
+floors = {colors.white, colors.yellow, colors.blue}
+monitors = {peripheral.wrap("monitor_5"), peripheral.wrap("monitor_7"), peripheral.wrap("monitor_8")}
+calls = {monitor_5=1, monitor_7=2, monitor_8=3} --LOL ComputerCraft
+
+function isCartStored()
+  data = cart.getStackInSlot(1)
+ return data ~= nil end
+
+
+function returnCart()
+  redstone.setBundledOutput("left", 0)
+  sleep(1*currentFloor)
+  if isCartStored() then
+    currentFloor = 0
+  else
+    redstone.setBundledOutput("left", 0)
+    while isCartStored() == false do
+      for m=1,#monitors do
+        mon = monitors[m]
+        mon.setCursorPos(1,1)
+        mon.setBackgroundColor(colors.red)
+        mon.write("CART LOST")
+      end
+      sleep(1)
+    end
+  end
+end
+function callToFloor(floor)
+  currentFloor = floor
+  redstone.setBundledOutput("left", floors[floor])
+  redstone.setOutput("right", true)
+  sleep(0.5)
+  redstone.setOutput("right",false)  
+end
+
+function goToFloor(floor)
+  callToFloor(floor)
+  sleep(3)
+  returnCart()
+end
+
+function drawUpdates()
+  for m=1,#monitors do
+    mon = monitors[m]
+    mon.setBackgroundColor(colors.black)
+    mon.setCursorPos(1,1)
+    mon.write("Floor:"..currentFloor.."")
+  end
+end
+function draw()
+  for m=1,#monitors do
+    mon = monitors[m]   
+    mon.setCursorPos(1,1)
+    mon.setBackgroundColor(colors.black)
+    mon.clear()
+    for f=0,#floors do
+      mon.setCursorPos(1,5-f)
+      if f % 2 == 1 then
+        mon.setBackgroundColor(colors.gray)
+      else
+        mon.setBackgroundColor(colors.lightGray)
+      end
+      mon.write("Floor "..f)
+    end
+    mon.setCursorPos(1,5)
+    mon.setBackgroundColor(colors.green)
+    mon.write("  CALL  ")
+  end
+end
+returnCart()
+draw()
+while true do
+  drawUpdates()
+  event, side, x, y = os.pullEvent("monitor_touch")
+  if y == 5 then
+    callToFloor(calls[side])
+  else
+    goToFloor(5-y)
+  end
+end
